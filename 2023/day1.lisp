@@ -1,5 +1,5 @@
 (defpackage :2023/day1
-  (:import-from :utils #:get-input)
+  (:import-from :utils #:get-input-lines)
   (:export #:part1
            #:part2))
 
@@ -17,7 +17,7 @@
                   (aref digits (- len 1)))))))
 
 (defun part1 ()
-  (loop for line in (get-input 2023 1)
+  (loop for line in (get-input-lines 2023 1)
         sum (parse-line-digits line)))
 
 (defparameter *numeric*
@@ -40,7 +40,20 @@
 
 ;; "eighthree" is 83 and for "sevenine" is 79.
 (defun part2 ()
-  (loop for line in (get-input 2023 1)
+  (loop for line in (get-input-lines 2023 1)
         sum (parse-line-digits 
               (replace-numberic
                 (replace-numberic line)))))
+
+;; TODO: Trie implementation
+(defun insert-trie (trie path value)
+  (loop with len = (length path)
+        for c across path
+        for i from 1 to len
+        for node = trie then (cdr (assoc c node))
+        if (null node) do
+        (setf node (list (cons c nil)))
+        if (= i len) do
+        (push (cons 'v value) node)
+        finally (return trie))
+  )

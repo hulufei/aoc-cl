@@ -4,4 +4,5 @@
                (:module "2023"
                   :depends-on ("utils")
                   :components
-                    ((:file "day1")))))
+                    ((:file "day1")
+                     (:file "day2")))))
