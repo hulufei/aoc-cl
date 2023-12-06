@@ -1,6 +1,9 @@
 (defpackage :utils
   (:export #:get-input-lines
-           #:get-sample-lines))
+           #:get-sample-lines
+           #:parse-integer-in-line
+           #:dbg
+           #:assert-equal))
 
 (in-package :utils)
 
@@ -30,3 +33,23 @@
 (defun get-sample-lines (year day)
   (uiop:read-file-lines
     (format nil "~d/day~d.sample" year day)))
+
+(defun parse-integer-silent (str)
+  (parse-integer str :JUNK-ALLOWED t))
+
+(defun parse-integer-in-line (line)
+  (remove 
+    nil
+    (mapcar
+      #'parse-integer-silent
+      (uiop:split-string line :SEPARATOR " "))))
+
+(defmacro dbg (v test &body body)
+  `(cond ((funcall ,test ,v) ,@body ,v)
+         (t ,v)))
+
+(defun assert-equal (actual expected)
+  (assert 
+    (= actual expected)
+    nil
+    "Expect ~a, got ~a" expected actual))
