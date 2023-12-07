@@ -1,6 +1,7 @@
 (defpackage :utils
   (:export #:get-input-lines
            #:get-sample-lines
+           #:read-lines
            #:parse-integer-in-line
            #:dbg
            #:assert-equal))
@@ -43,6 +44,13 @@
     (mapcar
       #'parse-integer-silent
       (uiop:split-string line :SEPARATOR " "))))
+
+(defun read-lines (year day &key sample)
+  (funcall 
+    (if sample
+        #'get-sample-lines
+        #'get-input-lines)
+    year day))
 
 (defmacro dbg (v test &body body)
   `(cond ((funcall ,test ,v) ,@body ,v)
