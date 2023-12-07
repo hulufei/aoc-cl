@@ -1,4 +1,5 @@
 (defpackage :utils
+  (:use :cl)
   (:export #:get-input-lines
            #:get-sample-lines
            #:read-lines

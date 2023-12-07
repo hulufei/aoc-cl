@@ -1,4 +1,5 @@
 (defpackage :2023/day5
+  (:use :cl)
   (:export #:part1
            #:part2))
 

@@ -1,4 +1,5 @@
 (defpackage :2023/day1
+  (:use :cl)
   (:import-from :utils #:get-input-lines)
   (:export #:part1
            #:part2))
