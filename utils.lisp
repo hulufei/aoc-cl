@@ -4,6 +4,7 @@
            #:get-sample-lines
            #:read-lines
            #:parse-integer-in-line
+           #:curry
            #:dbg
            #:assert-equal))
 
@@ -52,6 +53,15 @@
         #'get-sample-lines
         #'get-input-lines)
     year day))
+
+;; https://bese.common-lisp.dev/docs/arnesi/html/api/function_005FIT.BESE.ARNESI_003A_003ACURRY.html
+(defun curry (function &rest initial-args)
+  "Returns a function which will call FUNCTION passing it
+  INITIAL-ARGS and then any other args.
+
+ (funcall (curry #'list 1) 2) ==> (list 1 2)"
+  (lambda (&rest args)
+    (apply function (append initial-args args))))
 
 (defmacro dbg (v test &body body)
   `(cond ((funcall ,test ,v) ,@body ,v)
