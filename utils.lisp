@@ -4,6 +4,7 @@
            #:get-sample-lines
            #:read-lines
            #:parse-integer-in-line
+           #:make-grid
            #:curry
            #:dbg
            #:assert-equal))
@@ -53,6 +54,13 @@
         #'get-sample-lines
         #'get-input-lines)
     year day))
+
+(defun make-grid (lines)
+  (let* ((rows (length lines))
+         (cols (length (first lines))))
+    (make-array
+      (list rows cols)
+      :INITIAL-CONTENTS lines)))
 
 ;; https://bese.common-lisp.dev/docs/arnesi/html/api/function_005FIT.BESE.ARNESI_003A_003ACURRY.html
 (defun curry (function &rest initial-args)
