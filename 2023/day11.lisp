@@ -93,8 +93,7 @@
 ;;     ))
 
 (defun part1 ()
-  (let* ((universe (parse-universe *LINES*))
-         (bound (array-dimensions universe)))
+  (let ((universe (parse-universe *LINES*)))
     (reduce 
       #'+
       (mapcar
@@ -105,3 +104,59 @@
         (pair-galaxies (galaxies universe))))))
 
 (assert (equal (part1) 9647174))
+
+(defun expansion-count-between (n m checklist)
+  (loop
+    for i from (1+ (min n m)) below (max n m)
+    when (find i checklist)
+    count i))
+
+(defun expansion-rows (lines)
+  (loop
+    for line in lines
+    for x = 0 then (1+ x)
+    when (apply #'expansion-p (string->list line))
+    collect x))
+
+(defun expansion-cols (lines)
+  (let ((expands (apply
+                   #'mapcar
+                   #'expansion-p 
+                   (mapcar #'string->list lines))))
+    (loop
+      for expand in expands
+      for y = 0 then (1+ y)
+      when expand
+      collect y)))
+
+(defun shortest (start end scale exp-rows exp-cols)
+  (let* ((x1 (first start))
+         (y1 (second start))
+         (x2 (first end))
+         (y2 (second end))
+         (expansion-rows-count
+           (expansion-count-between x1 x2 exp-rows))
+         (expansion-cols-count
+           (expansion-count-between y1 y2 exp-cols)))
+    (+ (- (abs (- x1 x2)) expansion-rows-count)
+       (- (abs (- y1 y2)) expansion-cols-count)
+       (* scale expansion-rows-count)
+       (* scale expansion-cols-count))))
+
+(defun part2 ()
+  (let ((universe (utils:make-grid *LINES*))
+        (exp-rows (expansion-rows *LINES*))
+        (exp-cols (expansion-cols *LINES*)))
+    (reduce 
+      #'+
+      (mapcar
+        #'(lambda (pair)
+            (shortest 
+              (car pair)
+              (cdr pair)
+              1000000
+              exp-rows
+              exp-cols))
+        (pair-galaxies (galaxies universe))))))
+
+(assert (equal (part2) 377318892554))
