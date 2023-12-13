@@ -41,12 +41,12 @@
 (defun parse-integer-silent (str)
   (parse-integer str :JUNK-ALLOWED t))
 
-(defun parse-integer-in-line (line)
+(defun parse-integer-in-line (line &key (separator " "))
   (remove 
     nil
     (mapcar
       #'parse-integer-silent
-      (uiop:split-string line :SEPARATOR " "))))
+      (uiop:split-string line :SEPARATOR separator))))
 
 (defun read-lines (year day &key sample)
   (funcall 
