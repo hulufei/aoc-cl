@@ -3,35 +3,30 @@
 
 (in-package :2023/day14)
 
+;; (declaim (optimize (debug 3)))
+
 (defparameter *directions* '((N . (-1 . 0))
                              (W . (0 . -1))
                              (S . (1 . 0))
                              (E . (0 . 1))))
 
-(defparameter *lines* (utils:read-lines 2023 14 :SAMPLE t))
+(defparameter *lines* (utils:read-lines 2023 14 :SAMPLE nil))
 
 (defun calc-load (&rest seq)
   (loop
-    with gaps = 0
     for rows from (length seq) downto 1
     for rock in seq
-    when (char= rock #\.)
-    do (incf gaps)
-    when (char= rock #\#)
-    do (setf gaps 0)
     when (char= rock #\O)
-    sum (+ rows gaps)))
+    sum rows))
 
-(defun part1 ()
+(defun calc-grid-load (lines)
   (reduce
     #'+
     (apply 
       #'map
       'list
       #'calc-load
-      *LINES*)))
-
-;; (assert (equal (part1) 110407))
+      lines)))
 
 (defun scan-order (grid direction)
   (destructuring-bind (n m) (array-dimensions grid)
@@ -59,13 +54,13 @@
        (< x n)
        (< y m)))
 
-(defun move-direction (direction)
+(defun direction-offset (direction)
   (cdr (assoc direction *DIRECTIONS*)))
 
 (defun roll-rock (grid i j direction)
   (destructuring-bind (n m) (array-dimensions grid)
     (loop
-      with (offset-i . offset-j) = (move-direction direction)
+      with (offset-i . offset-j) = (direction-offset direction)
       for x = (+ i offset-i) then (+ x offset-i)
       for y = (+ j offset-j) then (+ y offset-j)
       while (bound-p x y n m)
@@ -81,20 +76,30 @@
       for (i . j) in group
       when (char= (aref grid i j) #\O) do
       (roll-rock grid i j direction)))
-  )
+  grid)
+
+(defun grid->lines (grid)
+  (destructuring-bind (n m) (array-dimensions grid)
+    (loop
+      for i from 0 below n collect
+      (concatenate
+        'string
+        (loop
+          for j from 0 below m
+          collect (aref grid i j))))))
 
 (defun grid->string (grid)
-  (destructuring-bind (n m) (array-dimensions grid)
-    (format
-      nil
-      "~%~{~a~^~&~}~%"
-      (loop
-        for i from 0 below n collect
-        (concatenate
-          'string
-          (loop
-            for j from 0 below m
-            collect (aref grid i j)))))))
+  (format
+    nil
+    "~%~{~a~^~&~}~%"
+    (grid->lines grid)))
+
+(defun part1 ()
+  (calc-grid-load 
+    (grid->lines
+      (tilt (utils:make-grid *LINES*) 'N))))
+
+(assert (equal (part1) 110407))
 
 (defun cycle (grid)
   (loop
@@ -103,9 +108,29 @@
   grid)
 
 (defun part2 ()
-  (let* ((grid (utils:make-grid *LINES*)))
-    (loop repeat 1000000000
-          (cycle grid))
-    (grid->string grid)))
+  (let* ((grid (utils:make-grid *LINES*))
+         (cache (make-hash-table :TEST #'equal)))
+    (loop with total = 1000000000
+          repeat total
+          for counter = 1 then (1+ counter)
+          for next = (grid->lines (cycle grid))
+          for cached-cycle = (gethash next cache)
+          if cached-cycle return 
+          (loop 
+            repeat
+            (mod
+              (- total counter)
+              (- counter cached-cycle))
+            do (cycle grid))
+          else do 
+          (setf (gethash next cache) counter))
+    (reduce
+      #'+
+      (apply 
+        #'map
+        'list
+        #'calc-load
+        (grid->lines grid)))
+    ))
 
-;; (part2)
+(assert (equal (part2) 87273))
