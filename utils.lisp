@@ -5,6 +5,7 @@
            #:read-lines
            #:parse-integer-in-line
            #:make-grid
+           #:string->list
            #:curry
            #:dbg
            #:assert-equal))
@@ -61,6 +62,9 @@
     (make-array
       (list rows cols)
       :INITIAL-CONTENTS lines)))
+
+(defun string->list (s)
+  (loop for c across s collect c))
 
 ;; https://bese.common-lisp.dev/docs/arnesi/html/api/function_005FIT.BESE.ARNESI_003A_003ACURRY.html
 (defun curry (function &rest initial-args)

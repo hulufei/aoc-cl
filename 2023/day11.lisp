@@ -1,5 +1,6 @@
 (defpackage :2023/DAY11
-  (:use :cl))
+  (:use :cl)
+  (:import-from :utils #:string->list))
 
 (in-package :2023/DAY11)
 
@@ -23,9 +24,6 @@
   (every
     #'(lambda (c) (char= #\. c))
     chars))
-
-(defun string->list (s)
-  (loop for c across s collect c))
 
 (defun expand-rows (lines)
   (loop
