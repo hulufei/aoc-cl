@@ -78,13 +78,32 @@
           (reverse-direction out)
           energized)))))
 
-(defun part1 ()
+(defun solve (grid start direction)
   (let ((energized (make-hash-table :TEST #'equal)))
     (beam-through
-      (make-grid)
-      '(0 . 0)
-      'W
+      grid
+      start
+      direction
       energized)
     (hash-table-count energized)))
 
+(defun part1 ()
+  (solve (make-grid) '(0 . 0) 'W))
+
 (assert (equal (part1) 6361))
+
+(defun part2 ()
+  (let ((grid (make-grid)))
+    (destructuring-bind (n m) (array-dimensions grid)
+      (max 
+        (loop
+          for j from 0 below m
+          maximize (max (solve grid (cons 0 j) 'N)
+                        (solve grid (cons (1- n) j) 'S)))
+        (loop
+          for i from 0 below n
+          maximize (max (solve grid (cons i 0) 'W)
+                        (solve grid (cons i (1- m)) 'E)))))
+    ))
+
+(assert (equal (part2) 6701))
