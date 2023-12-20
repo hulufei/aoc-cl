@@ -64,10 +64,10 @@
 
 (defun beam-through (grid pos source energized)
   "Return a list of next beam targets"
-  (let* ((i (car pos))
-         (j (cdr pos))
-         (key pos))
-    (when (and (utils:inside-p grid i j)
+  (let ((i (car pos))
+        (j (cdr pos))
+        (key pos))
+    (when (and (utils:inside-p grid pos)
                (not (member source (gethash key energized))))
       (push source (gethash key energized nil))
       (loop

@@ -67,12 +67,14 @@
 (defun string->list (s)
   (loop for c across s collect c))
 
-(defun inside-p (grid i j)
-  (destructuring-bind (n m) (array-dimensions grid)
-    (and (>= i 0)
-         (>= j 0)
-         (< i n)
-         (< j m))))
+(defun inside-p (grid pos)
+  (let ((i (car pos))
+        (j (cdr pos)))
+    (destructuring-bind (n m) (array-dimensions grid)
+      (and (>= i 0)
+           (>= j 0)
+           (< i n)
+           (< j m)))))
 
 ;; https://bese.common-lisp.dev/docs/arnesi/html/api/function_005FIT.BESE.ARNESI_003A_003ACURRY.html
 (defun curry (function &rest initial-args)
