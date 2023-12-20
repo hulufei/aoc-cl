@@ -62,7 +62,8 @@
            for next in (neighbors grid current)
            for new-pos = (reached-point-pos next)
            for new-cost = (reached-point-cost next)
-           for key = (cons new-pos pos)
+           for new-moves = (reached-point-moves next)
+           for key = (list new-pos pos new-moves)
            when (< new-cost (gethash key cost-so-far most-positive-fixnum)) do 
            (setf (gethash key cost-so-far) new-cost)
            (nconc queue (list next))
@@ -88,4 +89,4 @@
         (cons (1- n) (1- m)))
       )))
 
-(assert (equal (part1) 817)) ; too high
+(assert (equal (part1) 791)) ; too high
