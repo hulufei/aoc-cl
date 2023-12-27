@@ -155,6 +155,6 @@
 
 ;; https://github.com/40ants/cl-flamegraph
 ;; Upload following profile to https://www.speedscope.app/
-;; We can identify the bottleneck is sort function
+;; We can identify bottleneck is the sort function
 ;; (flamegraph:save-flame-graph ("2023/day17-part1-fl.stack")
 ;;   (part1))
