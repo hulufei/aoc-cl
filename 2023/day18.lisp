@@ -7,11 +7,13 @@
   (let ((parts (uiop:split-string line)))
     (setf (second parts) 
           (parse-integer (second parts)))
+    (setf (third parts)
+          (string-trim "()" (third parts)))
     parts))
 
 (assert
-  (equal (parse-line "R 6 (#70c710)")
-         (list "R" 6 "(#70c710)")))
+  (equal (parse-line "R 6 #70c710")
+         (list "R" 6 "#70c710")))
 
 (defun move-offset (direction)
   (cdr (assoc
@@ -36,12 +38,15 @@
     (setf (second acc) (+ count n))
     acc))
 
-(defun move-tracks ()
+(defun parse-plans ()
+  (mapcar
+    #'parse-line
+    (utils:read-lines 2023 18 :SAMPLE nil)))
+
+(defun move-tracks (plans)
   (reduce
     #'reduce-move
-    (mapcar
-      #'parse-line
-      (utils:read-lines 2023 18 :SAMPLE nil))
+    plans
     :INITIAL-VALUE (list (list '(0 . 0)) 0)))
 
 (defun shoelace (points)
@@ -55,9 +60,48 @@
     finally (return (/ (- a b) 2))))
 
 (defun part1 ()
-  (destructuring-bind (points len) (move-tracks)
+  (destructuring-bind 
+      (points len) 
+      (move-tracks (parse-plans))
     (+ (shoelace points)
        (/ len 2)
        1)))
 
 (assert (equal (part1) 34329))
+
+(defun digit->direction (d)
+  (ecase d
+    (#\0 "R")
+    (#\1 "D")
+    (#\2 "L")
+    (#\3 "U")))
+
+(defun color->plan (color)
+  "Decode hexadecimal code color to dig plan"
+  (list
+    (digit->direction 
+      (char color (1- (length color))))
+    (parse-integer
+      color
+      :START 1
+      :END 6
+      :RADIX 16)))
+
+(assert (equal (color->plan "#70c710") '("R" 461937)))
+(assert (equal (color->plan "#0dc571") '("D" 56407)))
+
+(defun decode-color (plans)
+  (mapcar
+    #'(lambda (plan)
+        (color->plan (third plan)))
+    plans))
+
+(defun part2 ()
+  (destructuring-bind 
+      (points len) 
+      (move-tracks (decode-color (parse-plans)))
+    (+ (shoelace points)
+       (/ len 2)
+       1)))
+
+(assert (equal (part2) 42617947302920))
